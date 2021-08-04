@@ -3,4 +3,6 @@
     <string name="iv_photograph_content_description">Imagem de perfil do contato</string>
     <string name="menu_1">Menu 1</string>
     <string name="menu_2">Menu 2</string>
+    <string name="open_drawer">Abrindo a gaveta</string>
+    <string name="close_drawer">Fechando a gaveta</string>
 </resources>
