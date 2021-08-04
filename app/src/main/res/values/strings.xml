@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">UX Bootcamp Santander</string>
+    <string name="iv_photograph_content_description">Imagem de perfil do contato</string>
 </resources>
