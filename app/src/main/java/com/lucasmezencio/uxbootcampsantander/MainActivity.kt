@@ -1,6 +1,8 @@
 package com.lucasmezencio.uxbootcampsantander
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -8,17 +10,19 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
-import android.widget.Toolbar
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.core.content.edit
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.lucasmezencio.uxbootcampsantander.ContactDetailActivity.Companion.EXTRA_CONTACT
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), ClickItemConctactListener {
     private val rvList: RecyclerView by lazy {
-        findViewById<RecyclerView>(R.id.rv_list)
+        findViewById(R.id.rv_list)
     }
 
     private val adapter = ContactAdapter(this)
@@ -28,8 +32,33 @@ class MainActivity : AppCompatActivity(), ClickItemConctactListener {
         setContentView(R.layout.drawer_menu)
 
         initDrawer()
+        fetchListContact()
         bindViews()
-        updateList()
+    }
+
+    private fun fetchListContact() {
+        val list = arrayListOf(
+            Contact(
+                "Lucas Mezencio",
+                "34 91234-5678",
+                "img.png"
+            ),
+            Contact(
+                "Marcio Alfredo",
+                "11 99999-9999",
+                "img.png"
+            )
+        )
+
+        getInstanceSharedPreferences().edit {
+            val json = Gson().toJson(list)
+            putString("contacts", json)
+            commit()
+        }
+    }
+
+    private fun getInstanceSharedPreferences(): SharedPreferences {
+        return getSharedPreferences("com.lucasmezencio.uxbootcampsantander.PREFERENCES", Context.MODE_PRIVATE)
     }
 
     private fun initDrawer() {
@@ -45,23 +74,18 @@ class MainActivity : AppCompatActivity(), ClickItemConctactListener {
     private fun bindViews() {
         rvList.adapter = adapter
         rvList.layoutManager = LinearLayoutManager(this)
+        updateList()
+    }
+
+    private fun getListContacts(): List<Contact> {
+        val list = getInstanceSharedPreferences().getString("contacts", "[]")
+        val turnsType = object : TypeToken<List<Contact>>() {}.type
+        return Gson().fromJson(list, turnsType)
     }
 
     private fun updateList() {
-        adapter.updateList(
-            arrayListOf(
-                Contact(
-                    "Lucas Mezencio",
-                    "34 91234-5678",
-                    "img.png"
-                ),
-                Contact(
-                    "Marcio Alfredo",
-                    "11 99999-9999",
-                    "img.png"
-                )
-            )
-        )
+        val list = getListContacts()
+        adapter.updateList(list)
     }
 
     private fun showToast(message: String) {
